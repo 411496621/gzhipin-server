@@ -3,6 +3,7 @@ const {Router} = express
 const router = new Router()
 //引入 model对象
 const userModel = require("../model/UserModel")
+const md5 = require("blueimp-md5")
 
 router.post("/register",async (req,res)=>{
      const {username,password,type} = req.body
@@ -15,7 +16,7 @@ router.post("/register",async (req,res)=>{
            "msg": "此用户已存在"
          })
        }else{ // 添加进数据库中 并且返回响应
-         const result = await userModel.create({username,password,type})
+         const result = await userModel.create({username,password:md5(password),type})
          console.log(result)
          res.json({
            "code": 0,
