@@ -15,6 +15,6 @@ app.use( express.urlencoded({extended:true}) )
 
 
 app.listen(5000, err=>{
-   if(!err) console.log("服务器启动成功 可以访问http://localhost:4000")
+   if(!err) console.log("服务器启动成功 可以访问http://localhost:5000")
    else console.log(err)
 })
