@@ -54,6 +54,11 @@ router.post("/login",async (req,res)=>{
                "username": user.username,
                "type": user.type,
                "_id": user._id,
+               "header":user.header,
+               "info":user.info,
+               "post":user.post,
+               "company":user.company,
+               "salary":user.salary
              }
            })
       }else{ // 用户名或密码不正确
