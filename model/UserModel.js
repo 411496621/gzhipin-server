@@ -15,7 +15,12 @@ const dataSchema = new Schema({
   type:{
      type:String,
      required:true
-  }
+  },
+  header:String,
+  info:String,
+  post:String,
+  company:String,
+  salary:String
 
 })
 // 创建模型对象
