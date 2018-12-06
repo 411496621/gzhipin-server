@@ -39,7 +39,6 @@ router.post("/register",async (req,res)=>{
      }
 
 })
-
 router.post("/login",async (req,res)=>{
     const {username,password} = req.body
     console.log(username,password)
@@ -109,5 +108,42 @@ router.post("/update",async (req,res)=>{
 
 })
 
+// 获取用户信息的路由(根据cookie中的userid)
+router.get('/user', (req, res) => {
+  // 从请求的cookie得到userid
+  const userid = req.cookies.userid
+  // 如果不存在, 直接返回一个提示信息
+  if (!userid) {
+    return res.send({code: 1, msg: '请先登陆'})
+  }
+  // 根据userid查询对应的user
+  userModel.findOne({_id: userid}, {_v:0,password:0})
+    .then(user => {
+      if (user) {
+        res.send({code: 0, data: user})
+      } else {
+        // 通知浏览器删除userid cookie
+        res.clearCookie('userid')
+        res.send({code: 1, msg: '请先登陆'})
+      }
+    })
+    .catch(error => {
+      console.error('获取用户异常', error)
+      res.send({code: 1, msg: '获取用户异常, 请重新尝试'})
+    })
+})
+
+router.get('/userlist', (req, res) => {
+
+  const {type} = req.query
+  userModel.find({type}, {__v: 0, password: 0})
+    .then(users => {
+      res.send({code: 0, data: users})
+    })
+    .catch(error => {
+      console.error('获取用户列表异常', error)
+      res.send({code: 1, msg: '获取用户列表异常, 请重新尝试'})
+    })
+})
 
 module.exports = router
