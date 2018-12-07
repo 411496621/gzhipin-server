@@ -5,9 +5,18 @@ const app = express()
 // 解析req.body的内容
 app.use( express.urlencoded({extended:true}) )
 
+
+
 ;(async ()=>{
    await db
    app.use(router)
+    const http = require('http')
+    const server = http.createServer(app)
+    require('./socketIO/')(server)
+
+    server.listen('5000', () => {
+      console.log('服务器启动成功, 请访问: http://localhost:5000')
+    })
 
 })()
 

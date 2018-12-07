@@ -20,13 +20,13 @@ router.post("/register",async (req,res)=>{
        }else{ // 添加进数据库中 并且返回响应
          const result = await userModel.create({username,password:md5(password),type})
          console.log(result)
-         res.cookie("userid",result._id,{maxAge:1000*3600*24*7})
+         res.cookie("userid",result.id,{maxAge:1000*3600*24*7})
          res.json({
            "code": 0,
            "data": {
              "username": result.username,
              "type": result.type,
-             "_id": result._id,
+             "_id": result.id,
            }
          })
        }
@@ -46,13 +46,13 @@ router.post("/login",async (req,res)=>{
       const user = await userModel.findOne({username,password:md5(password)})
       if(user){ // 可以登录
            console.log(user)
-           res.cookie("userid",user._id,{maxAge:1000*3600*24*7})
+           res.cookie("userid",user.id,{maxAge:1000*3600*24*7})
            res.json({
              "code": 0,
              "data": {
                "username": user.username,
                "type": user.type,
-               "_id": user._id,
+               "_id": user.id,
                "header":user.header,
                "info":user.info,
                "post":user.post,
