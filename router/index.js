@@ -3,6 +3,7 @@ const {Router} = express
 const router = new Router()
 //引入 model对象
 const userModel = require("../model/UserModel")
+const MessageModel = require("../model/MessageModel")
 const md5 = require("blueimp-md5")
 const cookieParser = require("cookie-parser")
 router.use(cookieParser())
@@ -117,7 +118,7 @@ router.get('/user', (req, res) => {
     return res.send({code: 1, msg: '请先登陆'})
   }
   // 根据userid查询对应的user
-  userModel.findOne({_id: userid}, {_v:0,password:0})
+  userModel.findOne({_id: userid}, {__v:0,password:0})
     .then(user => {
       if (user) {
         res.send({code: 0, data: user})
@@ -143,6 +144,37 @@ router.get('/userlist', (req, res) => {
     .catch(error => {
       console.error('获取用户列表异常', error)
       res.send({code: 1, msg: '获取用户列表异常, 请重新尝试'})
+    })
+})
+
+router.get('/msglist', (req, res) => {
+  // 获取cookie中的userid
+  const userid = req.cookies.userid
+
+  let users
+  // 查询得到所有user文档数组
+  userModel.find()
+    .then(userDocs => {
+      // 用对象存储所有user信息: key为user的_id, val为name和header组成的user对象
+      users = userDocs.reduce((prev, curr) => {
+        prev[curr._id] = {username: curr.username, header: curr.header}
+        return prev
+      }, {})
+      /*
+      查询userid相关的所有聊天信息
+       参数1: 查询条件
+       参数2: 过滤条件
+       参数3: 回调函数
+      */
+      return MessageModel.find({'$or': [{from: userid}, {to: userid}]}, {password:0,__v:0})
+    })
+    .then(chatMsgs => {
+      // 返回包含所有用户和当前用户相关的所有聊天消息的数据
+      res.send({code: 0, data: {users, chatMsgs}})
+    })
+    .catch(error => {
+      console.error('获取消息列表异常', error)
+      res.send({code: 1, msg: '获取消息列表异常, 请重新尝试'})
     })
 })
 
